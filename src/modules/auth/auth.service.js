@@ -13,7 +13,7 @@ export const signUp = async (data) => {
   let { userName, email, password  , phone ,gender , DOB } = data;
   let existUser = await findOne({model:userModel ,filter:{email}})
   if (existUser) {
-     ConflictException("email already exist");
+     ConflictException({message:"email already exist"});
   }
   let addedUser = await insertOne({
       model: userModel,
@@ -48,7 +48,7 @@ export const getUserById = async (userId) =>{
 
    const  userData = await findById({model:userModel , id:userId}) 
    if(!userData){
-     NotFoundException("user not found")
+     NotFoundException({message:"user not found"})
    }
    return userData
 }
@@ -57,7 +57,7 @@ export const updateLoginData = async (id , data) =>{
   let {userName , phone, gender, DOB} = data
   const existUser = await findById({model:userModel , id})
   if(!existUser){
-     NotFoundException("user not found")
+     NotFoundException({message:"user not found"})
   }
    
    
