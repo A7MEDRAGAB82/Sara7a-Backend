@@ -21,6 +21,7 @@ import {
   validateExists,
   generateAndSendOTP,
 } from "../../common/index.js";
+import { generateToken } from "../../common/security/token.security.js";
 
 export const signUp = async (data) => {
   let { userName, email, password, phone, gender, DOB } = data;
@@ -52,10 +53,7 @@ export const login = async (data) => {
   if (existUser) {
     const isMatched = await existUser.comparePassword(password);
     if (isMatched) {
-      let token = jwt.sign({ id: existUser._id }, env.JWT_SECRET_KEY, {
-        expiresIn: "1d",
-        issuer: "sara7a-app"
-      });
+      let token = generateToken({ payload: { id: existUser._id } });
       return { user: existUser, token };
     }
   }
