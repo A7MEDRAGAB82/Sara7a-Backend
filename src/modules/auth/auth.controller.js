@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { signUp  , login , getUserById , updateLoginData , deleteUser , updatePassword , forgotPassword, resetPassword} from "./auth.service.js";
+import { signUp  , login , getUserById , updateLoginData , deleteUser , updatePassword , forgotPassword, resetPassword , refreshTokens , logout} from "./auth.service.js";
 import { NotFoundException, SuccessResponse } from "../../common/utils/response/index.js";
 import { verifyToken , asyncWrapper , allowedTo} from "../../middlewares/index.js"
 
@@ -90,6 +90,35 @@ router.patch("/reset-password", asyncWrapper(async (req,res)=>{
 
 }))
 
+router.post("/refresh-token", asyncWrapper(async (req, res) => {
+    const { token } = req.body;
+
+    if (!token) {
+        BadRequestException("Refresh token is required");
+    }
+
+    const result = await refreshTokens(token);
+
+    return SuccessResponse({
+      res,
+      message: "Tokens refreshed successfully",
+      status: 200,
+      data: result 
+    });
+}));
+
+router.post("/logout", asyncWrapper(async (req, res) => {
+    const { token } = req.body;
+    if (!token) return BadRequestException("Refresh token is required");
+
+    await logout(token);
+
+    return SuccessResponse({
+      res,
+      message: "Logged out successfully",
+      status: 200
+    });
+}));
 
 
 export default router;

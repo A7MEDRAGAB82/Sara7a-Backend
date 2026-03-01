@@ -21,7 +21,24 @@ import {
   validateExists,
   generateAndSendOTP,
 } from "../../common/index.js";
-import { generateToken } from "../../common/security/token.security.js";
+import { generateToken , generateRandomToken } from "../../common/security/token.security.js";
+
+const createSession = async (user) => {
+  const audience = user.role === "0" ? "Admin" : "User";
+  const accessToken = generateToken({
+    payload: { id: user._id },
+    expiresIn: "30m",
+    audience: audience,
+  });
+
+  const refreshToken = generateRandomToken();
+  
+  await redisClient.set(`refreshToken:${refreshToken}`, user._id.toString(), {
+    EX: 30 * 24 * 60 * 60 
+  });
+
+  return { accessToken, refreshToken };
+};
 
 export const signUp = async (data) => {
   let { userName, email, password, phone, gender, DOB } = data;
@@ -55,16 +72,14 @@ export const login = async (data) => {
   }
 
   const isMatched = await existUser.comparePassword(password);
-  if (isMatched) {
-    let audience = existUser.role === "0" ? "Admin" : "User";
-    let token = generateToken({
-      payload: { id: existUser._id },
-      audience: audience,
-    });
-    return { user: existUser, token };
-  }
+  if (!isMatched) NotFoundException({ message: "invalid email or password" });
 
-  NotFoundException({ message: "invalid email or password" });
+  const tokens = await createSession(existUser);
+  return { user: existUser, ...tokens };
+};
+
+export const logout = async (refreshToken) => {
+  return await redisClient.del(`refreshToken:${refreshToken}`);
 };
 
 export const getUserById = async (userId) => {
@@ -145,3 +160,20 @@ export const resetPassword = async (email, otp, newPassword) => {
   await redisClient.del(`otp:${email}`);
   return { message: "Password has been reset successfully" };
 };
+
+export const refreshTokens = async (token) => {
+  const userId = await redisClient.get(`refreshToken:${token}`);
+  if (!userId) {
+    UnauthorizedException("refresh token is expired or not valid")
+  }
+
+  await redisClient.del(`refreshToken:${token}`);
+
+  const user = await findById({ model: userModel, id: userId });
+  if (!user) NotFoundException("user not found");
+
+  return await createSession(user);
+};
+
+
+
