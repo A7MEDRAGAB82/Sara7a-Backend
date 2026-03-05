@@ -126,3 +126,35 @@ Consequences
 Clients must store and send two different tokens.
 
 The system relies on Redis availability for all authentication renewals.
+
+Decision 007: Centralized Request Validation using Joi
+
+Context
+We need a robust way to validate incoming request data (body, params, query) to ensure it meets our business rules and prevent malformed data from reaching the service layer.
+
+Decision
+We implemented a centralized validation system using the Joi library and a custom higher-order middleware:
+
+Validation Schemas: Created specific schemas for each endpoint (e.g., signUpSchema, updateLoginDataSchema).
+
+Generic Middleware: Developed a validateRequest middleware that takes a Joi schema and validates the req.body against it.
+
+Strict Sanitization: Used stripUnknown: true to automatically remove any fields not defined in the schema (preventing Mass Assignment Attacks).
+
+Comprehensive Feedback: Used abortEarly: false to return all validation errors at once to the client.
+
+Reason
+
+Security: Acts as the first line of defense against injection and invalid data.
+
+Cleaner Controllers: Controllers no longer need to check for field existence or data types; they receive "clean" data.
+
+Single Source of Truth: Business rules (like password length or allowed gender enums) are defined in one place per module.
+
+Improved UX: Providing all errors in one response helps frontend developers debug faster.
+
+Consequences
+
+Every new endpoint must have an associated Joi schema.
+
+Changes to the database schema must be reflected in the corresponding Joi schemas
