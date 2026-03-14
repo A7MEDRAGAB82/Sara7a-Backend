@@ -44,7 +44,12 @@ router.post(
   "/sign-up",
   validateRequest(signUpSchema),
   asyncWrapper(async (req, res) => {
-    let addedUser = await signUp(req.body);
+     const finalData = {
+        ...req.body,
+        profilePic: req.file ? req.file.path : undefined 
+    };
+
+    let addedUser = await signUp(finalData);
     return SuccessResponse({
       res,
       message: "user added successfully",
@@ -194,12 +199,6 @@ router.post(
   }),
 );
 
-router.post("/test" , multer_local({customPath:"profileImages"}).single("image") , asyncWrapper((req,res)=>{
-  res.status(200).json({
-    message : "done",
-    file : req.file,
-    body : req.body
-  })
-}))
+ 
 
 export default router;

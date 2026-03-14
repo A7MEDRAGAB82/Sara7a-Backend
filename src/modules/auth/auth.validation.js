@@ -8,7 +8,8 @@ export const signUpSchema = Joi.object({
   password: Joi.string().min(6).required(),
   phone: Joi.string().pattern(/^[0-9]+$/), 
  gender: Joi.number().valid(...Object.values(GenderEnums)),
-  DOB: Joi.date().less("now")
+  DOB: Joi.date().less("now"),
+  profilePic: Joi.string().optional()
 });
 
 export const loginSchema = Joi.object({

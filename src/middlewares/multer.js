@@ -6,7 +6,7 @@ export let multer_local = ({ customPath } = { customPath: "general" }) => {
     destination: function (req, file, cb) {
       let filesPath = `upload/${customPath}`;
       if (!fs.existsSync(filesPath)){
-         fs.mkdir(filesPath);
+         fs.mkdirSync(filesPath,{ recursive: true });
       }
       cb(null, filesPath);
     },
