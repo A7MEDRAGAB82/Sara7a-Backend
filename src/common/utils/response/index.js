@@ -1,2 +1,2 @@
-export * from "./error.responce.js"
-export * from "./success.responce.js"
+export * from "./error.response.js"
+export * from "./success.response.js"

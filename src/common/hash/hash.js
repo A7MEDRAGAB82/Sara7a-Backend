@@ -2,8 +2,8 @@ import {hash,compare} from 'bcrypt'
 import {env} from "../../../config/index.js"
 
 export const generateHash = async (plainText) =>{
-    const hashedPassword = await hash(plainText, +env.saltRounds || 10)
-    return hashedPassword
+    const hashedText = await hash(plainText, +env.saltRounds || 10)
+    return hashedText
 }
 
 export const compareHash = async (plainText,hashedText) => {

@@ -1,23 +1,27 @@
-import jwt from 'jsonwebtoken';
+// src/middlewares/verifyToken.js
+import jwt from "jsonwebtoken";
+import { env } from "../../config/index.js";
+import { UnauthorizedException } from "../common/utils/response/index.js";
 
-const verifyToken = (req, res, next) => {
-    const authHeader = req.headers.token || req.headers.authorization;
+export const verifyToken = (req, res, next) => {
+  const authHeader = req.headers.token || req.headers.authorization;
 
-    if (!authHeader) {
-        return res.status(401).json({ message: "You are not authenticated!" });
-    }
+  if (!authHeader) {
+    return UnauthorizedException({ res, message: "Authentication required!" });
+  }
 
-    const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : authHeader;
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : authHeader;
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        req.user = decoded; 
-        
-        next(); 
-    } catch (err) {
-        return res.status(403).json({ message: "Token is not valid or expired!" });
-    }
+  try {
+    const decoded = jwt.verify(token, env.JWT_SECRET_KEY, {
+      issuer: "sara7a-app",
+    });
+
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return UnauthorizedException({ res, message: "Invalid or expired token!" });
+  }
 };
-
-export default verifyToken;

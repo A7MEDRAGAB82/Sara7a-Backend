@@ -1,177 +1,131 @@
 # Sara7a App — Backend
 
-> RESTful API backend for **Sara7a App**, built with Node.js and Express.  
-> **Status:** *Under active development.*
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-green?logo=node.js)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express.js-5.x-blue?logo=express)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-brightgreen?logo=mongodb)]
+[![Redis](https://img.shields.io/badge/Redis-Session%20Store-red?logo=redis)]
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## Description
+## Overview
 
-Sara7a App Backend is a modular Node.js API that provides authentication and user management. It uses a layered architecture, centralized error handling, and security best practices (hashing, JWT, encryption for sensitive fields). The codebase is structured for scalability and maintainability as features are added.
-
----
-
-## Project Status
-
-This project is **ongoing**. Implemented features are production-ready within the current scope; additional modules and endpoints are planned. Implemented vs. planned features are clearly separated below.
+**Sara7a App** is a modular, production-ready Node.js/Express backend for secure user management and authentication. It leverages modern best practices, robust security, and a scalable architecture.
 
 ---
 
-## Tech Stack
+## 🚀 Tech Stack
 
-| Category   | Technologies                                      |
-| ---------- | ------------------------------------------------- |
-| Runtime    | Node.js (ES Modules)                              |
-| Framework  | Express 5                                         |
-| Database   | MongoDB + Mongoose                                |
-| Auth       | JWT (jsonwebtoken), bcrypt                        |
-| Security   | CryptoJS (AES) for sensitive data encryption      |
-| Config     | dotenv                                            |
-
----
-
-## Architecture
-
-- **Modular structure** — Auth module, database layer, and shared utilities in separate modules.
-- **Layered flow** — Controllers → Services → Database layer.
-- **Reusable database layer** — Generic helpers: `findOne`, `findById`, `insertOne`, `insertMany`, `findAll`, `findOneAndUpdate`, `findOneAndDelete`.
-- **Bootstrap pattern** — Single entry point: connect DB, mount routes, register global error handler, then start server.
-- **Response helpers** — Unified success responses and custom exceptions (e.g. `BadRequestException`, `NotFoundException`, `ConflictException`, `UnauthorizedException`).
-- **Global error handler** — Centralized error handling; stack traces only in development.
+- **Node.js** (ES Modules)
+- **Express.js** 5.x
+- **MongoDB** with **Mongoose**
+- **Redis** (Session & OTP management)
+- **Multer** (File uploads)
+- **Joi** (Request validation)
+- **Bcrypt** (Password hashing)
 
 ---
 
-## Security
+## 🏗️ Architecture
 
-- **Password hashing** — bcrypt with configurable salt rounds.
-- **JWT authentication** — Signed tokens with expiration (e.g. 1 day).
-- **Sensitive data encryption** — AES (CryptoJS) for fields like phone number before storage.
-- **Safe serialization** — Password and `__v` excluded from JSON responses via Mongoose `toJSON`.
-- **Multi-provider readiness** — User schema supports System and Google (OAuth-ready).
+- **Modular Structure:** Each feature (e.g., Auth) is organized in its own folder with controller, service, router, and validation files.
+- **Layered Approach:** Controllers → Services → Database Layer.
+- **Centralized Error Handling** and **Reusable Middlewares**.
 
 ---
 
-## Database (Mongoose)
+## ✅ Completed Features
 
-- **Schema validation** — Required fields, min/max length, trim, lowercase, unique where needed.
-- **Virtuals** — `userName` derived from `firstName` and `lastName`.
-- **Pre-save hooks** — Auto hashing of password and encryption of sensitive fields on save.
-- **Instance methods** — `comparePassword` for login verification.
-- **Timestamps** — `createdAt` and `updatedAt` enabled on schemas.
-
----
-
-## Implemented Features
-
-- User **sign-up** (email, password, phone, provider).
-- User **login** (email/password, returns user + JWT).
-- **Get user by ID** (protected by JWT in `Authorization` header).
-- Duplicate-email handling (409 Conflict).
-- Invalid credentials handling (404).
-- Missing/invalid token handling (401).
+- [x] **JWT Authentication:** Sign-up, Login, Logout
+- [x] **Session Management:** Refresh tokens & blacklisting via Redis
+- [x] **File Uploads:** Profile picture upload (Multer, stored in `/upload`)
+- [x] **Password Hashing:** Secure with Bcrypt
+- [x] **OTP Password Reset:** OTPs managed in Redis
+- [x] **Request Validation:** Joi-based input validation
+- [x] **Static File Serving:** Uploaded images served as static assets
 
 ---
 
-## Upcoming Features
+## 📦 Project Structure
 
-- Route protection middleware applied consistently across all protected endpoints.
-- User profile update (e.g. `updateLoginData`).
-- Google OAuth login (schema prepared).
-- Additional API modules and routes as the product evolves.
+<details>
+<summary>Click to expand</summary>
+
+```
+src/
+├── modules/
+│   └── auth/
+│       ├── auth.controller.js
+│       ├── auth.service.js
+│       ├── auth.validation.js
+│       └── ...
+├── middlewares/
+│   ├── multer.js
+│   ├── verifyToken.js
+│   └── ...
+├── common/
+│   ├── encryption/
+│   ├── enums/
+│   ├── hash/
+│   └── utils/
+│       ├── sendEmail.js
+│       ├── sendOTP.js
+│       └── validators.js
+├── database/
+│   ├── connection.js
+│   ├── models/
+│   │   └── user.model.js
+│   └── ...
+└── main.js
+```
+
+</details>
 
 ---
 
-## Installation
+## ⚙️ Setup Instructions
 
-1. **Clone the repository**
+1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/A7MEDRAGAB82/SARA7A.git
-   cd SARA7A
+   git clone https://github.com/A7MEDRAGAB82/sara7aApp.git
+   cd sara7aApp
    ```
 
-2. **Install dependencies**
+2. **Install dependencies:**
 
    ```bash
    npm install
    ```
 
-3. **Environment variables**
+3. **Configure environment variables:**  
+   Create a `.env` file in the root directory with the following:
 
-   Create a `.env` file inside the `config` folder (`config/.env`) with the following variables:
-
-   ```env
-   PORT=
-   DATABASE_URI=
-   MOOD=
-   SALT=
-   JWT_SECRET_KEY=your secret key
-   ENC_KEY=your encryption key
+   ```
+   PORT=3000
+   DB_URL=your_mongodb_connection_string
+   REDIS_URL=your_redis_url
+   JWT_ACCESS_SECRET=your_access_secret
+   JWT_REFRESH_SECRET=your_refresh_secret
    ```
 
-   | Variable        | Description                                |
-   | --------------- | ------------------------------------------ |
-   | `PORT`          | Server port                                |
-   | `DATABASE_URI`  | MongoDB connection string                   |
-   | `MOOD`          | `dev` or `prod` (affects error details)    |
-   | `SALT`          | bcrypt salt rounds (e.g. 10)               |
-   | `JWT_SECRET_KEY`| Secret for signing JWT                     |
-   | `ENC_KEY`       | Key for AES encryption of sensitive data   |
-
-4. **Run the project**
-
+4. **Run the server:**
    ```bash
    npm start
    ```
 
-   The server runs with `node --watch src/main.js` (auto-restart on file changes). Default base URL: `http://localhost:<PORT>`.
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ---
 
-## API Overview
+## 🙌 Contributing
 
-**Base path:** `/auth`
-
-| Method | Endpoint           | Description                    |
-| ------ | ------------------ | ------------------------------ |
-| POST   | `/auth/sign-up`    | Register a new user            |
-| POST   | `/auth/login`      | Login (returns user + JWT)     |
-| GET    | `/auth/get-user-by-id` | Get user profile (requires `Authorization` header with JWT) |
-
-**Example request (login):**
-
-```http
-POST /auth/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "your-password"
-}
-```
-
-**Example response (success):**
-
-```json
-{
-  "status": 200,
-  "message": "user login successfully",
-  "data": {
-    "user": { ... },
-    "token": "eyJhbGciOiJIUzI1NiIs..."
-  }
-}
-```
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 
-## Repository
-
-- **GitHub:** [SARA7A](https://github.com/A7MEDRAGAB82/SARA7A)
-- **Issues:** [Report a bug or request a feature](https://github.com/A7MEDRAGAB82/SARA7A/issues)
-
----
-
-## License
-
-ISC
+**Sara7a App** — Secure, modular, and production-ready authentication for modern web apps.
