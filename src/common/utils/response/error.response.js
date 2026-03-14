@@ -46,15 +46,15 @@ export const ForbiddenException = ({ message = "ForbiddenException", extra = und
 }
 
 export const globalErrorHandler = (error, req, res, next) => {
-    const status = error.status ? error.status : error.cause ? error.cause.status : 500;
+    const status = error.status || error.cause?.status || 500;
     const mood = env.mood == 'dev'
     const deafultMessage = 'Something went wrong'
     const displayErrorMessage = error.message || deafultMessage
-    const extra = error.extra || {};
+    const extra = error.extra || error.cause?.extra || {};
     res.status(status).json({
         status,
         stack: mood ? error.stack : null,
         errorMessage: mood ? displayErrorMessage : deafultMessage,
-        extra:error.cause.extra
+        extra:extra
     });
 }

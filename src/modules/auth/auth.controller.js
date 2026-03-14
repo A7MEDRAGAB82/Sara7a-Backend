@@ -32,8 +32,13 @@ import {
   refreshTokenSchema,
   logoutSchema,
 } from "./auth.validation.js";
+import multer from "multer";
+import { multer_local } from "../../middlewares/multer.js";
 
 const router = Router();
+
+
+
 
 router.post(
   "/sign-up",
@@ -188,5 +193,13 @@ router.post(
     });
   }),
 );
+
+router.post("/test" , multer_local({customPath:"profileImages"}).single("image") , asyncWrapper((req,res)=>{
+  res.status(200).json({
+    message : "done",
+    file : req.file,
+    body : req.body
+  })
+}))
 
 export default router;
