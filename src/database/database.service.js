@@ -11,6 +11,7 @@ export const findOne = async ({
   if (options.populate) {
     doc.populate(options.populate);
   }
+  if(options.lean)doc.lean()
   return await doc;
 };
 
@@ -38,9 +39,12 @@ export const findOneAndUpdate = async ({
   update = {},
   options = {},
 }) => {
-  options = { new: true, ...options };
-
-  return await model.findOneAndUpdate(filter, update, options);
+  docOptions = { new: true, ...options };
+  let doc = model.findOneAndUpdate(filter , update , docOptions )
+  if(options.populate)doc.populate(options.populate)
+  if(options.lean)doc.lean()
+    
+    return await doc;
 };
 
 export const findOneAndDelete = async ({ model, filter = {} }) => {
@@ -55,6 +59,7 @@ export const findById = async ({ model, id, select = "", options = {} }) => {
   if (options.populate) {
     doc.populate(options.populate);
   }
+  if(options.lean)doc.lean()
   return await doc;
 };
 
