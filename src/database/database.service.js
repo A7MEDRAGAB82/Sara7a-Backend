@@ -19,16 +19,16 @@ export const findAll = async ({
   filter = {},
   select = "",
   options = {},
-  skip = 0,
-  limit = 10,
 }) => {
-  let doc = model.find(filter).skip(skip).limit(limit);
+  let doc = model.find(filter)
   if (select) {
     doc.select(select);
   }
-  if (options.populate) {
-    doc.populate(options.populate);
-  }
+ if (options.populate) doc.populate(options.populate);
+  if (options.skip) doc.skip(options.skip);
+  if (options.limit) doc.limit(options.limit);
+  if (options.sort) doc.sort(options.sort);
+  if (options.lean) doc.lean();
   return await doc;
 };
 
