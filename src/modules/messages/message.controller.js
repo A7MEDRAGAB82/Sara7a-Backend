@@ -71,6 +71,7 @@ router.delete(
   "/delete-message/:id",
   verifyToken,
   allowedTo("Admin", "User"),
+  validateRequest(messageIdSchema , 'params'),
   asyncWrapper(async (req, res) => {
     await deleteMessage(req.params.id, req.user.id);
     return SuccessResponse({

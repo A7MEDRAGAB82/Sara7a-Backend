@@ -30,7 +30,7 @@ export const findAll = async ({
   const page = options.page || 1;
   const skip = options.skip || (page - 1) * limit;
 
-  query.skip(skip).limit(limit);
+  doc.skip(skip).limit(limit);
 
  if (options.populate) doc.populate(options.populate);
   if (options.sort) doc.sort(options.sort);
@@ -44,7 +44,7 @@ export const findOneAndUpdate = async ({
   update = {},
   options = {},
 }) => {
-  docOptions = { new: true, ...options };
+  const docOptions = { new: true, ...options };
   let doc = model.findOneAndUpdate(filter , update , docOptions )
   if(options.populate)doc.populate(options.populate)
   if(options.lean)doc.lean()
