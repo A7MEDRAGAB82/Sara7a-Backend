@@ -41,7 +41,7 @@ const createSession = async (user) => {
 };
 
 export const signUp = async (data) => {
-  let { userName, email, password, phone, gender, DOB, profilePic } = data;
+  let { userName, email, password, phone, gender, DOB, profilePic  , shareProfileName } = data;
   let existUser = await findOne({ model: userModel, filter: { email } });
   if (existUser) {
     ConflictException({ message: "email already exist" });
@@ -56,6 +56,7 @@ export const signUp = async (data) => {
       gender,
       DOB,
       profilePic,
+      shareProfileName,
       provider: ProviderEnums.System,
     },
   });

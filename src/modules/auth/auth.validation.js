@@ -9,7 +9,15 @@ export const signUpSchema = Joi.object({
   phone: Joi.string().pattern(/^[0-9]+$/), 
  gender: Joi.number().valid(...Object.values(GenderEnums)),
   DOB: Joi.date().less("now"),
-  profilePic: Joi.string().optional()
+  profilePic: Joi.string().optional(),
+  shareProfileName: Joi.string()
+    .pattern(/^[a-zA-Z0-9_-]+$/)
+    .min(3)
+    .max(30)
+    .required()
+    .messages({
+      'string.pattern.base': 'Share profile name can only contain letters, numbers, underscores, and hyphens'
+    })
 });
 
 export const loginSchema = Joi.object({
