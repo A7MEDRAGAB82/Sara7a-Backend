@@ -42,17 +42,21 @@ const router = Router();
 
 router.post(
   "/sign-up",
+  multer_local({ customPath: "profileImages" }).single("profilePic"),
+  
   validateRequest(signUpSchema),
+  
   asyncWrapper(async (req, res) => {
-     const finalData = {
-        ...req.body,
-        profilePic: req.file ? req.file.path : undefined 
+    const finalData = {
+      ...req.body,
+      profilePic: req.file ? req.file.path : undefined 
     };
 
     let addedUser = await signUp(finalData);
+
     return SuccessResponse({
       res,
-      message: "user added successfully",
+      message: "User added successfully",
       status: 201,
       data: addedUser,
     });

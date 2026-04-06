@@ -41,24 +41,41 @@ const createSession = async (user) => {
 };
 
 export const signUp = async (data) => {
-  let { userName, email, password, phone, gender, DOB, profilePic } = data;
-  let existUser = await findOne({ model: userModel, filter: { email } });
+  const { 
+    userName, 
+    email, 
+    password, 
+    phone, 
+    gender, 
+    DOB, 
+    profilePic,
+    shareProfileName 
+  } = data;
+
+  const existUser = await findOne({ 
+    model: userModel, 
+    filter: { email } 
+  });
+
   if (existUser) {
-    ConflictException({ message: "email already exist" });
+    throw ConflictException({ message: "Email already exists" });
   }
-  let addedUser = await insertOne({
+
+  const addedUser = await insertOne({
     model: userModel,
     data: {
-      userName,
+      userName, 
       email,
       password,
       phone,
       gender,
       DOB,
-      profilePic,
-      provider: ProviderEnums.System,
+      profilePic, 
+      shareProfileName,
+      provider: ProviderEnums.System, 
     },
   });
+
   return addedUser;
 };
 
