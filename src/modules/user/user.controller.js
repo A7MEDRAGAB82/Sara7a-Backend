@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUserProfile , shareProfileLink  , getUserData , updateUserProfile} from "./user.service.js";
+import { getUserProfile , shareProfileLink  , getUserData , updateUserProfile, deleteUserProfile} from "./user.service.js";
 import { SuccessResponse } from "../../common/utils/response/index.js";
 import { asyncWrapper, multer_local, verifyToken } from "../../middlewares/index.js";
 
@@ -52,6 +52,17 @@ router.patch("/update-user-profile" , multer_local({ customPath: "profileImages"
         statusCode:200,
         data: data
     })
+}))
+
+router.delete("/delete-user-profile" , verifyToken , asyncWrapper(async(req , res)=>{
+    const data = await deleteUserProfile(req.user.id)
+    return SuccessResponse({
+        res,
+        message: "User profile deleted successfully",
+        statusCode:200,
+        data:data
+    })
+    
 }))
 
 export default router;
