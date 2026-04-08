@@ -1,5 +1,5 @@
 import { userModel } from "../../database/models/user.model.js";
-import { findOne } from "../../database/database.service.js";
+import { findOne, findOneAndUpdate , findOneAndDelete } from "../../database/database.service.js";
 import { NotFoundException } from "../../common/utils/response/index.js";
 import { env } from "../../../config/index.js";
 
@@ -55,3 +55,28 @@ export const getUserData = async (fullLink) => {
 
   return user;
 };
+
+export const updateUserProfile = async (userId , data)=>{
+     const user = await findOneAndUpdate({
+        model : userModel,
+        filter : {_id : userId},
+        update : data
+     })
+     if(!user){
+        throw NotFoundException({message: `User with ID "${userId}" not found`})
+     }
+     return user
+}
+
+export const deleteUserProfile = async (userId) => {
+  const user = await findOneAndDelete({
+     model: userModel,
+     filter :  {_id:userId},
+  })
+  if(!user){
+      throw NotFoundException({message: `User with ID "${userId}" not found`})
+  }
+
+  return user
+
+}

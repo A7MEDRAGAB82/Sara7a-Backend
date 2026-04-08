@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { getUserProfile , shareProfileLink  , getUserData} from "./user.service.js";
+import { getUserProfile , shareProfileLink  , getUserData , updateUserProfile, deleteUserProfile} from "./user.service.js";
 import { SuccessResponse } from "../../common/utils/response/index.js";
-import { asyncWrapper, verifyToken } from "../../middlewares/index.js";
+import { asyncWrapper, multer_local, verifyToken } from "../../middlewares/index.js";
 
 const router = Router();
 
 router.get("/get-user-profile" , verifyToken , asyncWrapper(async(req , res)=>{
-
+       
     const profile = await getUserProfile(req.user.id)
 
     return SuccessResponse({
@@ -37,6 +37,32 @@ router.get("/get-user-data" , asyncWrapper(async(req ,res)=>{
     statusCode:200,
     data: data
    })
+}))
+
+router.patch("/update-user-profile" , multer_local({ customPath: "profileImages" }).single("profilePic") , verifyToken , asyncWrapper(async(req  , res)=>{
+   const updateData = { ...req.body };
+        if (req.file) {
+            updateData.profilePic = req.file.path;
+        }
+
+    const data = await updateUserProfile(req.user.id , updateData)
+    return SuccessResponse({
+        res,
+        message: "User profile updated successfully",
+        statusCode:200,
+        data: data
+    })
+}))
+
+router.delete("/delete-user-profile" , verifyToken , asyncWrapper(async(req , res)=>{
+    const data = await deleteUserProfile(req.user.id)
+    return SuccessResponse({
+        res,
+        message: "User profile deleted successfully",
+        statusCode:200,
+        data:data
+    })
+    
 }))
 
 export default router;
