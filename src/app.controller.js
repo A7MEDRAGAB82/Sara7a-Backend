@@ -8,6 +8,7 @@ import messageRouter from "./modules/messages/message.controller.js"
 import userRouter from "./modules/user/user.controller.js"
 import { connectRedis } from "./database/index.js"
 import helmet from 'helmet'
+import rateLimit from 'express-rate-limit'
 
 
 
@@ -19,6 +20,13 @@ export const bootStrap = async () => {
     origin: '*', 
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, 
+	limit: 100, 
+	message: 'Too many requests from this IP, please try again after 15 minutes',
+    standardHeaders: 'draft-7', 
+	legacyHeaders: false, 
 }));
     app.use("/uploads", express.static("uploads"))
     await databaseConnection()
