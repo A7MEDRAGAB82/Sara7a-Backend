@@ -9,6 +9,7 @@ import userRouter from "./modules/user/user.controller.js"
 import { connectRedis } from "./database/index.js"
 import helmet from 'helmet'
 import rateLimit from 'express-rate-limit'
+import geoip from 'geoip-lite'
 
 
 
@@ -28,6 +29,12 @@ app.use(rateLimit({
     standardHeaders: 'draft-7', 
 	legacyHeaders: false, 
 }));
+app.use((req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const geo = geoip.lookup(ip);
+    req.clientGeo = geo || { country: 'Unknown', region: 'Unknown', city: 'Unknown' };
+    next();
+})
     app.use("/uploads", express.static("uploads"))
     await databaseConnection()
     await connectRedis()
